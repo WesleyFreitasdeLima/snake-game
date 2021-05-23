@@ -46,7 +46,15 @@ const snake = {
 
     this.autoMove();
   },
+
   autoMove() {
+    this.move();
+    this.checkBorderCollision();
+    this.checkAutoCollision();
+    this.checkPreyCollision();
+  },
+
+  move() {
     let currentPosX = this.chunks[0].x;
     let currentPosY = this.chunks[0].y;
 
@@ -55,6 +63,18 @@ const snake = {
     if (this.direction === "up") currentPosY -= block;
     if (this.direction === "down") currentPosY += block;
 
+    const newSnakeChunk = { x: currentPosX, y: currentPosY };
+    this.chunks.unshift(newSnakeChunk);
+  },
+
+  checkBorderCollision() {
+    if (this.chunks[0].x >= 16 * block) this.chunks[0].x = 0;
+    if (this.chunks[0].x < 0) this.chunks[0].x = 16 * block;
+    if (this.chunks[0].y >= 16 * block) this.chunks[0].y = 0;
+    if (this.chunks[0].y < 0) this.chunks[0].y = 16 * block;
+  },
+
+  checkPreyCollision() {
     if (
       this.chunks[0].x === prey.position.x &&
       this.chunks[0].y === prey.position.y
@@ -63,16 +83,19 @@ const snake = {
     } else {
       this.chunks.pop();
     }
-
-    const newSnakeChunk = { x: currentPosX, y: currentPosY };
-    this.chunks.unshift(newSnakeChunk);
-
-    // Fix position on borders
-    if (this.chunks[0].x >= 16 * block) this.chunks[0].x = 0;
-    if (this.chunks[0].x < 0) this.chunks[0].x = 16 * block;
-    if (this.chunks[0].y >= 16 * block) this.chunks[0].y = 0;
-    if (this.chunks[0].y < 0) this.chunks[0].y = 16 * block;
   },
+
+  checkAutoCollision() {
+    for (let index = 1; index < this.chunks.length; index++) {
+      if (
+        this.chunks[0].x === this.chunks[index].x &&
+        this.chunks[0].y === this.chunks[index].y
+      ) {
+        this.die();
+      }
+    }
+  },
+
   changeDirection(event) {
     if (event.keyCode === 37 && snake.direction !== "right")
       snake.direction = "left";
@@ -83,13 +106,37 @@ const snake = {
     if (event.keyCode === 40 && snake.direction !== "up")
       snake.direction = "down";
   },
+
   eat() {
     prey.alive = false;
-    game.increaseScore();
+
+    game.score += 1;
+    document.getElementById("score").innerHTML = game.score;
+
+    this.chunks.unshift();
   },
-  dead() {
-    
-  }
+
+  die() {
+    alert("YOU DIE!");
+
+    game.lives -= 1;
+    document.getElementById("lives").innerHTML = game.lives;
+
+    if (game.lives > 0) {
+      this.respawn();
+    } else {
+      game.gameOver();
+    }
+  },
+
+  respawn() {
+    while (this.chunks.length > 2) {
+      this.chunks.pop();
+    }
+    this.chunks[0] = { x: 8 * block, y: 8 * block };
+    game.score = 0;
+    document.getElementById("score").innerHTML = game.score;
+  },
 };
 
 const prey = {
@@ -106,7 +153,6 @@ const prey = {
     if (this.alive === false) {
       this.position.x = this.randomPosition();
       this.position.y = this.randomPosition();
-
       this.alive = true;
     }
 
@@ -117,20 +163,23 @@ const prey = {
 
 const game = {
   score: 0,
-  increaseScore(){
-    const score = document.getElementById("score");
-    score.innerHTML = this.score += 1;
-  },
-
+  lives: 3,
+  session: null,
   start() {
     return setInterval(() => {
       backdrop.render();
       snake.render();
       prey.render();
-
-      console.log(prey.position, snake.chunks[0]);
-    }, 300);
+    }, 100);
   },
+  gameOver() {
+    alert("GAME OVER!");
+    clearInterval(this.session);
+  },
+  saveScore(score){
+    this.score.push(score);
+    localStorage.setItem('bestScores', JSON.parse(this.bestScores));
+  }
 };
 
-game.start();
+game.session = game.start();
