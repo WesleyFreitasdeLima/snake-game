@@ -2,7 +2,10 @@ const canvas = document.getElementById("gameArea");
 const context = canvas.getContext("2d");
 
 const block = 32;
-const snake = [];
+const snake = {
+  direction: "right",
+  chunks: [{ x: 8 * block, y: 8 * block }],
+};
 
 function renderBackdrop() {
   const startPosX = 0;
@@ -10,24 +13,49 @@ function renderBackdrop() {
   const width = 16 * block;
   const height = 16 * block;
 
-  context.fillStyle = "#004589";
+  context.fillStyle = "#89c4ff";
   context.fillRect(startPosX, startPosY, width, height);
 }
 
 function renderSnake() {
-  snake[0] = {
-    x: 8 * block,
-    y: 8 * block,
-  };
-
-  for (let index = 0; index < snake.length; index++) {
+  for (let index = 0; index < snake.chunks.length; index++) {
     const width = block;
     const height = block;
 
-    context.fillStyle = "#001e3b";
-    context.fillRect(snake[index].x, snake[index].y, width, height);
+    const headColor = "#001e3b";
+    const bodyColor = "#004589";
+
+    context.fillStyle = index === 0 ? headColor : bodyColor;
+    context.fillRect(
+      snake.chunks[index].x,
+      snake.chunks[index].y,
+      width,
+      height
+    );
   }
 }
 
-renderBackdrop();
-renderSnake();
+function autoMoveSnake() {
+  let currentPosX = snake.chunks[0].x;
+  let currentPosY = snake.chunks[0].y;
+
+  if (snake.direction === "right") currentPosX += block;
+  if (snake.direction === "left") currentPosX -= block;
+  if (snake.direction === "up") currentPosY -= block;
+  if (snake.direction === "down") currentPosY += block;
+
+  const newSnakeChunck = { x: currentPosX, y: currentPosY };
+
+  snake.chunks.pop();
+  snake.chunks.unshift(newSnakeChunck);
+}
+
+function startGame() {
+  return setInterval(() => {
+    renderBackdrop();
+    renderSnake();
+    autoMoveSnake();
+  }, 300);
+}
+
+startGame();
