@@ -76,11 +76,23 @@ const snake = {
   },
 };
 
+const prey = {
+  color: "#50bd47",
+  randomPosition() {
+    return Math.floor(Math.random() * 16) * block;
+  },
+  render() {
+    context.fillStyle = this.color;
+    context.fillRect(this.randomPosition(), this.randomPosition(), block, block);
+  },
+};
+
 function startGame() {
   return setInterval(() => {
     backdrop.render();
     snake.render();
     snake.autoMove();
+    prey.render();
   }, 300);
 }
 
