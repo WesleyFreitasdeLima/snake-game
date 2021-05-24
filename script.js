@@ -155,8 +155,28 @@ const prey = {
 
   render() {
     if (this.alive === false) {
-      this.position.x = this.randomPosition();
-      this.position.y = this.randomPosition();
+      let invalidPos = false;
+      let posX = this.randomPosition();
+      let posY = this.randomPosition();
+
+      do {
+        const invalid = snake.chunks.filter(
+          (chunk) => chunk.x === posX && chunk.y === posY
+        );
+
+        if (invalid.length > 0) {
+          invalidPos = true;
+          posX = this.randomPosition();
+          posY = this.randomPosition();
+        } else {
+          invalidPos = false;
+        }
+
+      } while (invalidPos === true);
+
+      this.position.x = posX;
+      this.position.y = posY;
+
       this.alive = true;
     }
 
