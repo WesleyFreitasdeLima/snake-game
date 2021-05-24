@@ -12,7 +12,8 @@ const backdrop = {
     width: 16 * block,
     height: 16 * block,
   },
-  color: "#89c4ff",
+  color: "#9ac920",
+
   render() {
     context.fillStyle = this.color;
     context.fillRect(
@@ -28,9 +29,10 @@ const snake = {
   direction: "right",
   chunks: [{ x: 8 * block, y: 8 * block }],
   color: {
-    head: "#001e3b",
-    body: "#004589",
+    head: "#2d2d2d",
+    body: "#494949",
   },
+
   render() {
     document.addEventListener("keydown", this.changeDirection);
 
@@ -140,15 +142,17 @@ const snake = {
 };
 
 const prey = {
-  color: "#50bd47",
+  color: "red",
   position: {
     x: 0,
     y: 0,
   },
   alive: false,
+
   randomPosition() {
     return Math.floor(Math.random() * 16) * block;
   },
+
   render() {
     if (this.alive === false) {
       this.position.x = this.randomPosition();
@@ -176,10 +180,10 @@ const game = {
     alert("GAME OVER!");
     clearInterval(this.session);
   },
-  saveScore(score){
+  saveScore(score) {
     this.score.push(score);
-    localStorage.setItem('bestScores', JSON.parse(this.bestScores));
-  }
+    localStorage.setItem("bestScores", JSON.parse(this.bestScores));
+  },
 };
 
 game.session = game.start();

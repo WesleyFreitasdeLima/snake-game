@@ -6,10 +6,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Snake Game</title>
 
+    <link rel="stylesheet" href="style.css" />
     <script defer src="script.js"></script>
   </head>
   <body>
-    <h3 id="gameTitle">Snake Game</h3>
-    <canvas id="gameArea" width="512" height="512"></canvas>
+    <div id="game">
+      <canvas id="gameArea" width="512" height="512"></canvas>
+
+      <div id="infoPanel">
+
+        <h1 id="title">&#128013; SNAKE GAME JS &#128013;</h1>
+
+        <div id="scorePanel">
+          <p>Score: <span id="score">0</span></p>
+          <p>Lives: <span id="lives">3</span></p>
+        </div>
+
+        <br />
+
+        <div id="instructions">
+          <h3>Instructions</h3>
+          <ul>
+            <li>Use the arrow's keys to move the snake</li>
+            <li>Don't let the snake touch its own body</li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
